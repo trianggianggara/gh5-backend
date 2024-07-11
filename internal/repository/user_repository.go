@@ -26,7 +26,7 @@ func NewUserRepository(conn *gorm.DB, log *logrus.Logger) *UserRepository {
 func (r *Repository[T]) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
 	query := r.getConn().Model(model.UserModel{})
 	result := new(model.UserModel)
-	err := query.Where("email", email).First(result).Error
+	err := query.Where("email", email).Preload("Role").First(result).Error
 	if err != nil {
 		return nil, r.maskError(err)
 	}

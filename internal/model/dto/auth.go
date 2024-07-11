@@ -19,9 +19,9 @@ type (
 // response
 type (
 	AuthLoginResponse struct {
-		Token string `json:"token"`
-		Role  string `json:"role"`
-		model.UserModel
+		Name     string `json:"name"`
+		Username string `json:"username"`
+		Token    string `json:"token"`
 	}
 	AuthLoginResponseDoc struct {
 		Body struct {

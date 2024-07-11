@@ -73,6 +73,7 @@ func (m *UserModel) GenerateJWT() (string, error) {
 		"id":    m.ID,
 		"email": m.Email,
 		"name":  m.Name,
+		"role":  m.Role.Name,
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),
 	})
 

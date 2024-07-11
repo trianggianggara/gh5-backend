@@ -37,8 +37,9 @@ func (s *AuthUsecase) Login(ctx context.Context, payload dto.AuthLoginRequest) (
 	}
 
 	result = dto.AuthLoginResponse{
-		Token:     token,
-		UserModel: *data,
+		Name:     data.Name,
+		Username: data.Username,
+		Token:    token,
 	}
 
 	return result, nil
