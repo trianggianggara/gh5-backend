@@ -70,11 +70,12 @@ func (m *UserModel) GenerateJWT() (string, error) {
 	)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":    m.ID,
-		"email": m.Email,
-		"name":  m.Name,
-		"role":  m.Role.Name,
-		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+		"id":        m.ID,
+		"email":     m.Email,
+		"name":      m.Name,
+		"role":      m.Role.Name,
+		"role_code": m.Role.RoleCode,
+		"exp":       time.Now().Add(time.Hour * 72).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(jwtKey))
