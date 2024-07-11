@@ -17,8 +17,18 @@ func NewDelivery(f factory.Factory) *delivery {
 }
 
 func (h *delivery) Route(g *echo.Group) {
+	g.GET("", h.Get)
 	g.GET("/:id", h.GetByID)
 	g.POST("/", h.Create)
+}
+
+func (h *delivery) Get(c echo.Context) error {
+	result, err := h.Factory.Usecase.Role.Find(c.Request().Context())
+	if err != nil {
+		return res.ErrorResponse(err).Send(c)
+	}
+
+	return res.CustomSuccessBuilder(200, result, "Get all roles success").Send(c)
 }
 
 func (h *delivery) GetByID(c echo.Context) error {
@@ -36,7 +46,7 @@ func (h *delivery) GetByID(c echo.Context) error {
 		return res.ErrorResponse(err).Send(c)
 	}
 
-	return res.CustomSuccessBuilder(200, result, "Get roles success by id").Send(c)
+	return res.CustomSuccessBuilder(200, result, "Get roles by id success").Send(c)
 }
 
 func (h *delivery) Create(c echo.Context) error {

@@ -15,12 +15,30 @@ func NewRoleUsecase(f repository.Factory) *RoleUsecase {
 	return &RoleUsecase{f}
 }
 
+func (u *RoleUsecase) Find(ctx context.Context) ([]dto.RoleResponse, error) {
+	var result []dto.RoleResponse
+
+	roles, err := u.RepositoryFactory.RoleRepository.Find(ctx)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find all roles : %+v", err)
+		return result, err
+	}
+
+	for _, role := range roles {
+		result = append(result, dto.RoleResponse{
+			Data: role,
+		})
+	}
+
+	return result, nil
+}
+
 func (u *RoleUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dto.RoleResponse, error) {
 	var result dto.RoleResponse
 
 	data, err := u.RepositoryFactory.RoleRepository.FindByID(ctx, payload.ID)
 	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find Role by id : %+v", err)
+		u.RepositoryFactory.Log.Warnf("Failed find role by id : %+v", err)
 		return result, err
 	}
 

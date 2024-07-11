@@ -77,3 +77,13 @@ func (r *Repository[T]) FindByID(ctx context.Context, id any) (*T, error) {
 	}
 	return result, nil
 }
+
+func (r *Repository[T]) Find(ctx context.Context) ([]T, error) {
+	query := r.conn.Model(r.entity)
+	result := new([]T)
+	err := query.Find(result).Error
+	if err != nil {
+		return nil, r.maskError(err)
+	}
+	return *result, nil
+}
