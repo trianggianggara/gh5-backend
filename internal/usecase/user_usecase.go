@@ -16,6 +16,37 @@ func NewUserUsecase(f repository.Factory) *UserUsecase {
 	return &UserUsecase{f}
 }
 
+func (u *UserUsecase) Find(ctx context.Context) ([]dto.UserResponse, error) {
+	var result []dto.UserResponse
+
+	users, err := u.RepositoryFactory.UserRepository.Find(ctx)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find all users: %+v", err)
+		return result, err
+	}
+
+	roles, err := u.RepositoryFactory.RoleRepository.Find(ctx)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find all roles: %+v", err)
+		return result, err
+	}
+
+	roleMap := make(map[string]model.RoleModel)
+	for _, role := range roles {
+		roleMap[role.ID] = role
+	}
+
+	for _, user := range users {
+		roleData := roleMap[user.RoleID]
+		user.Role = &roleData
+		result = append(result, dto.UserResponse{
+			Data: user,
+		})
+	}
+
+	return result, nil
+}
+
 func (u *UserUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dto.UserResponse, error) {
 	var result dto.UserResponse
 
@@ -24,6 +55,14 @@ func (u *UserUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 		u.RepositoryFactory.Log.Warnf("Failed find user by id : %+v", err)
 		return result, err
 	}
+
+	role, err := u.RepositoryFactory.RoleRepository.FindByID(ctx, data.RoleID)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find all roles: %+v", err)
+		return result, err
+	}
+
+	data.Role = role
 
 	result = dto.UserResponse{
 		Data: *data,
