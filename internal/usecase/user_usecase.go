@@ -105,6 +105,7 @@ func (u *UserUsecase) Create(ctx context.Context, payload dto.CreateUserRequest)
 			UserEntity: model.UserEntity{
 				Email:    email,
 				Username: payload.Username,
+				Password: payload.Password,
 			},
 			Context: ctx,
 		}

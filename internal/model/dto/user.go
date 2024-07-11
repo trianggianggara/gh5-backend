@@ -12,6 +12,7 @@ type (
 		Username string  `json:"username" validate:"required"`
 		Email    *string `json:"email,omitempty" validate:"omitempty"`
 		Password string  `json:"password"`
+		RoleID   string  `json:"role_id" validate:"required"`
 	}
 )
 
