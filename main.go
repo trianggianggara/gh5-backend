@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gh5-backend/internal/driver/db"
 	constant "gh5-backend/pkg/constants"
 	"gh5-backend/pkg/utils/env"
 
@@ -18,4 +19,5 @@ func init() {
 }
 
 func main() {
+	db.Init()
 }
