@@ -3,6 +3,7 @@ package main
 import (
 	"gh5-backend/internal/driver/db"
 	"gh5-backend/internal/driver/http"
+	"gh5-backend/internal/driver/migration"
 	"gh5-backend/internal/factory"
 	constant "gh5-backend/pkg/constants"
 	"gh5-backend/pkg/utils/env"
@@ -22,6 +23,7 @@ func init() {
 
 func main() {
 	db.Init()
+	migration.Init()
 	f := factory.Init()
 	http.Init(f)
 }
