@@ -23,6 +23,9 @@ type UserEntity struct {
 	PasswordHash string `json:"-"`
 	Password     string `json:"password" validate:"required" gorm:"-"`
 	IsActive     bool   `json:"is_active"`
+	RoleID       string `json:"role_id" validate:"required" gorm:"not null"`
+
+	Role *RoleModel `json:"role" gorm:"foreignkey:RoleID"`
 }
 
 type UserModel struct {
