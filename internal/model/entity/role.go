@@ -14,7 +14,7 @@ import (
 
 type RoleEntity struct {
 	Name     string `json:"name" validate:"required" gorm:"size:200; not null"`
-	RoleCode string `json:"email" validate:"required"`
+	RoleCode string `json:"role_code" validate:"required"`
 	IsActive bool   `json:"is_active"`
 }
 

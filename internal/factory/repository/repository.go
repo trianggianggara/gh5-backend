@@ -17,13 +17,14 @@ type Factory struct {
 	Log *logrus.Logger
 
 	UserRepository dbRepository.UserRepository
+	RoleRepository dbRepository.RoleRepository
 }
 
 func Init() Factory {
 	f := Factory{}
 	f.InitLogger()
 	f.InitDb()
-	f.InitUserDbRepository()
+	f.InitDbRepository()
 
 	return f
 }
@@ -53,7 +54,7 @@ func (f *Factory) InitDb() {
 	f.Db = db
 }
 
-func (f *Factory) InitUserDbRepository() {
+func (f *Factory) InitDbRepository() {
 	if f.Db == nil {
 		panic("Failed init repository, db is undefined")
 	}
@@ -63,4 +64,5 @@ func (f *Factory) InitUserDbRepository() {
 	}
 
 	f.UserRepository = *dbRepository.NewUserRepository(f.Db, f.Log)
+	f.RoleRepository = *dbRepository.NewRoleRepository(f.Db, f.Log)
 }
