@@ -8,8 +8,7 @@ import (
 // request
 type (
 	CreateRoleRequest struct {
-		Name     string `json:"name" validate:"required"`
-		RoleCode string `json:"role_code" validate:"required"`
+		model.RoleEntity
 	}
 )
 
