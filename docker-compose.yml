@@ -1,0 +1,11 @@
+services:
+  web:
+    restart: always
+    image: trianggianggara/gh5-backend:latest
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=${ENV}
+    tty: true
+    container_name: gh5-backend
