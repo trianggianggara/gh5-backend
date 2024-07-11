@@ -106,6 +106,7 @@ func (u *UserUsecase) Create(ctx context.Context, payload dto.CreateUserRequest)
 				Email:    email,
 				Username: payload.Username,
 				Password: payload.Password,
+				RoleID:   payload.RoleID,
 			},
 			Context: ctx,
 		}
