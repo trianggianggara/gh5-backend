@@ -17,13 +17,15 @@ import (
 )
 
 type UserEntity struct {
-	Name         string `json:"name" validate:"required" gorm:"size:200; not null"`
-	Username     string `json:"username" validate:"required" gorm:"size:100;not null"`
-	Email        string `json:"email" validate:"required,email" gorm:"index:idx_user_email;unique;size:150;not null"`
-	PasswordHash string `json:"-"`
-	Password     string `json:"password" validate:"required" gorm:"-"`
-	IsActive     bool   `json:"is_active"`
-	RoleID       string `json:"role_id" validate:"required" gorm:"not null"`
+	Name               string `json:"name" validate:"required" gorm:"size:200; not null"`
+	Username           string `json:"username" validate:"required" gorm:"size:100;not null"`
+	Email              string `json:"email" validate:"required,email" gorm:"index:idx_user_email;unique;size:150;not null"`
+	IdentityCardNumber string `json:"identity_card_number" validate:"required"`
+	Address            string `json:"address" validate:"required"`
+	PasswordHash       string `json:"-"`
+	Password           string `json:"password" validate:"required" gorm:"-"`
+	IsActive           bool   `json:"is_active"`
+	RoleID             string `json:"role_id" validate:"required" gorm:"not null"`
 
 	Role *RoleModel `json:"role" gorm:"foreignkey:RoleID"`
 }

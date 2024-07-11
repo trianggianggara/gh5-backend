@@ -8,6 +8,8 @@ import (
 	model "gh5-backend/internal/model/entity"
 	res "gh5-backend/pkg/utils/response"
 
+	"gh5-backend/pkg/utils/trxmanager"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -52,8 +54,31 @@ func (s *AuthUsecase) Register(ctx context.Context, payload dto.AuthRegisterRequ
 
 	data.UserEntity = payload.UserEntity
 
-	data, err = s.RepositoryFactory.UserRepository.Create(ctx, data)
-	if err != nil {
+	if err = trxmanager.New(s.RepositoryFactory.Db).WithTrx(ctx, func(ctx context.Context) error {
+		data, err = s.RepositoryFactory.UserRepository.Create(ctx, data)
+		if err != nil {
+			return err
+		}
+
+		role, err := s.RepositoryFactory.RoleRepository.FindByID(ctx, data.RoleID)
+		if err != nil {
+			return err
+		}
+
+		if role.RoleCode == "LYR" || role.RoleCode == "LSD" {
+			lawyer := model.LawyerModel{
+				LawyerEntity: model.LawyerEntity{
+					UserID: data.ID,
+				},
+				Context: ctx,
+			}
+			_, err = s.RepositoryFactory.LawyerRepository.Create(ctx, lawyer)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
 		return result, err
 	}
 

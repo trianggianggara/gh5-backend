@@ -33,6 +33,7 @@ func Init() {
 			DbModels: &[]interface{}{
 				&model.UserModel{},
 				&model.RoleModel{},
+				&model.LawyerModel{},
 			},
 			IsAutoMigrate: true,
 		},

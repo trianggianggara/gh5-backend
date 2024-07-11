@@ -16,9 +16,10 @@ type Factory struct {
 	Db  *gorm.DB
 	Log *logrus.Logger
 
-	Auth usecase.AuthUsecase
-	User usecase.UserUsecase
-	Role usecase.RoleUsecase
+	Auth   usecase.AuthUsecase
+	User   usecase.UserUsecase
+	Role   usecase.RoleUsecase
+	Lawyer usecase.LawyerUsecase
 }
 
 func Init(r repository.Factory) Factory {
@@ -28,6 +29,7 @@ func Init(r repository.Factory) Factory {
 	f.Auth = *usecase.NewAuthUsecase(r)
 	f.User = *usecase.NewUserUsecase(r)
 	f.Role = *usecase.NewRoleUsecase(r)
+	f.Lawyer = *usecase.NewLawyerUsecase(r)
 
 	return f
 }

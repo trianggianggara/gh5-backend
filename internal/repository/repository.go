@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"gh5-backend/pkg/ctxval"
 	res "gh5-backend/pkg/utils/response"
 
 	"github.com/jackc/pgconn"
@@ -26,6 +27,14 @@ func (r *Repository[T]) getConn() *gorm.DB {
 	return r.conn
 }
 
+func (m *Repository[T]) checkTrx(ctx context.Context) {
+	trx := ctxval.GetTrxValue(ctx)
+	if trx != nil {
+		m.conn = trx.Db
+	}
+	m.conn = m.conn.WithContext(ctx)
+}
+
 func (m *Repository[T]) maskError(err error) error {
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -45,23 +54,27 @@ func (m *Repository[T]) maskError(err error) error {
 }
 
 func (r *Repository[T]) Create(ctx context.Context, data T) (T, error) {
+	r.checkTrx(ctx)
 	query := r.conn.Model(r.entity)
 	err := query.Create(&data).Error
 	return data, r.maskError(err)
 }
 
 func (r *Repository[T]) Update(ctx context.Context, data T) (T, error) {
+	r.checkTrx(ctx)
 	query := r.conn.Model(r.entity)
 	err := query.Updates(&data).Error
 	return data, r.maskError(err)
 }
 
 func (r *Repository[T]) Delete(ctx context.Context, entity *T) error {
+	r.checkTrx(ctx)
 	err := r.conn.Model(r.entity).Delete(entity).Error
 	return r.maskError(err)
 }
 
 func (r *Repository[T]) CountByID(ctx context.Context, id any) (int64, error) {
+	r.checkTrx(ctx)
 	var total int64
 	query := r.conn.Model(r.entity)
 	err := query.Model(new(T)).Where("id = ?", id).Count(&total).Error
@@ -69,6 +82,7 @@ func (r *Repository[T]) CountByID(ctx context.Context, id any) (int64, error) {
 }
 
 func (r *Repository[T]) FindByID(ctx context.Context, id any) (*T, error) {
+	r.checkTrx(ctx)
 	query := r.conn.Model(r.entity)
 	result := new(T)
 	err := query.Where("id", id).First(result).Error
@@ -79,6 +93,7 @@ func (r *Repository[T]) FindByID(ctx context.Context, id any) (*T, error) {
 }
 
 func (r *Repository[T]) Find(ctx context.Context) ([]T, error) {
+	r.checkTrx(ctx)
 	query := r.conn.Model(r.entity)
 	result := new([]T)
 	err := query.Find(result).Error

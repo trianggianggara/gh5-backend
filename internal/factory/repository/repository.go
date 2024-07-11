@@ -16,8 +16,9 @@ type Factory struct {
 	Db  *gorm.DB
 	Log *logrus.Logger
 
-	UserRepository dbRepository.UserRepository
-	RoleRepository dbRepository.RoleRepository
+	UserRepository   dbRepository.UserRepository
+	RoleRepository   dbRepository.RoleRepository
+	LawyerRepository dbRepository.LawyerRepository
 }
 
 func Init() Factory {
@@ -65,4 +66,5 @@ func (f *Factory) InitDbRepository() {
 
 	f.UserRepository = *dbRepository.NewUserRepository(f.Db, f.Log)
 	f.RoleRepository = *dbRepository.NewRoleRepository(f.Db, f.Log)
+	f.LawyerRepository = *dbRepository.NewLawyerRepository(f.Db, f.Log)
 }
