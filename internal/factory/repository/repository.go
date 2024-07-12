@@ -19,6 +19,7 @@ type Factory struct {
 	UserRepository   dbRepository.UserRepository
 	RoleRepository   dbRepository.RoleRepository
 	LawyerRepository dbRepository.LawyerRepository
+	CaseRepository   dbRepository.CaseRepository
 }
 
 func Init() Factory {
@@ -67,4 +68,5 @@ func (f *Factory) InitDbRepository() {
 	f.UserRepository = *dbRepository.NewUserRepository(f.Db, f.Log)
 	f.RoleRepository = *dbRepository.NewRoleRepository(f.Db, f.Log)
 	f.LawyerRepository = *dbRepository.NewLawyerRepository(f.Db, f.Log)
+	f.CaseRepository = *dbRepository.NewCaseRepository(f.Db, f.Log)
 }

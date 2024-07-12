@@ -34,6 +34,7 @@ func Init() {
 				&model.UserModel{},
 				&model.RoleModel{},
 				&model.LawyerModel{},
+				&model.CaseModel{},
 			},
 			IsAutoMigrate: true,
 		},

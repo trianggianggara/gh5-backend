@@ -20,6 +20,7 @@ type Factory struct {
 	User   usecase.UserUsecase
 	Role   usecase.RoleUsecase
 	Lawyer usecase.LawyerUsecase
+	Case   usecase.CaseUsecase
 }
 
 func Init(r repository.Factory) Factory {
@@ -30,6 +31,7 @@ func Init(r repository.Factory) Factory {
 	f.User = *usecase.NewUserUsecase(r)
 	f.Role = *usecase.NewRoleUsecase(r)
 	f.Lawyer = *usecase.NewLawyerUsecase(r)
+	f.Case = *usecase.NewCaseUsecase(r)
 
 	return f
 }
