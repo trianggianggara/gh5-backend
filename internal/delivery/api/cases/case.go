@@ -20,7 +20,7 @@ func (h *delivery) Route(g *echo.Group) {
 	g.GET("", h.Get)
 	g.GET("/:id", h.GetByID)
 	g.GET("/users/:id", h.GetByUserID)
-	g.POST("/", h.Create)
+	g.POST("", h.Create)
 	g.PUT("/:id", h.UpdateByID)
 
 }

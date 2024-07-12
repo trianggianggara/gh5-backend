@@ -20,7 +20,7 @@ func (h *delivery) Route(g *echo.Group) {
 	g.GET("", h.Get)
 	g.GET("/:id", h.GetByID)
 	g.GET("/", h.GetByEmail)
-	g.POST("/", h.Create)
+	g.POST("", h.Create)
 }
 
 func (h *delivery) Get(c echo.Context) error {
