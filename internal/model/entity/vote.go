@@ -13,9 +13,9 @@ import (
 )
 
 type VoteEntity struct {
-	IsActive bool    `json:"is_active"`
-	UserID   *string `json:"user_id"`
-	CaseID   *string `json:"case_id"`
+	IsActive bool   `json:"is_active"`
+	UserID   string `json:"user_id"`
+	CaseID   string `json:"case_id"`
 
 	Users *UserModel `json:"user" gorm:"foreignkey:UserID"`
 	Cases *CaseModel `json:"case" gorm:"foreignkey:CaseID"`

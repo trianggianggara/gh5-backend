@@ -62,14 +62,14 @@ func (u *VoteUsecase) Upvote(ctx context.Context, payload dto.UpvoteRequest) (dt
 		}
 	)
 
-	vote, err := u.RepositoryFactory.VoteRepository.FindVoteByCaseAndUserID(ctx, *payload.CaseID, *payload.UserID)
+	vote, err := u.RepositoryFactory.VoteRepository.FindVoteByCaseAndUserID(ctx, payload.CaseID, payload.UserID)
 	if err != nil {
 		u.RepositoryFactory.Log.Warnf("Failed find vote by case and user id : %+v", err)
 		return result, err
 	}
 
 	if vote.ID != "" {
-		data, err = u.RepositoryFactory.VoteRepository.Revote(ctx, *payload.CaseID, *payload.UserID)
+		data, err = u.RepositoryFactory.VoteRepository.Revote(ctx, payload.CaseID, payload.UserID)
 		if err != nil {
 			u.RepositoryFactory.Log.Warnf("Failed to revote : %+v", err)
 			return result, err

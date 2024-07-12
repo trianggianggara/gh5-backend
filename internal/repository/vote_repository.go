@@ -76,7 +76,7 @@ func (r *VoteRepository) FindVoteByCaseAndUserID(ctx context.Context, caseID str
 	r.checkTrx(ctx)
 	query := r.getConn().Table(r.entityName)
 	result := model.VoteModel{}
-	err := query.Where("case_id = ? AND user_id = ?", caseID, userID).First(result).Error
+	err := query.Where("case_id = ? AND user_id = ?", caseID, userID).First(&result).Error
 	if err != nil {
 		return result, r.maskError(err)
 	}
