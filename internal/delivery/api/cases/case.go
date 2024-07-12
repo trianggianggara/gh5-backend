@@ -20,6 +20,8 @@ func (h *delivery) Route(g *echo.Group) {
 	g.GET("", h.Get)
 	g.GET("/:id", h.GetByID)
 	g.POST("/", h.Create)
+	g.PUT("/:id", h.UpdateByID)
+
 }
 
 func (h *delivery) Get(c echo.Context) error {
@@ -59,6 +61,24 @@ func (h *delivery) Create(c echo.Context) error {
 	}
 
 	result, err := h.Factory.Usecase.Case.Create(c.Request().Context(), *payload)
+	if err != nil {
+		return res.ErrorResponse(err).Send(c)
+	}
+
+	return res.SuccessResponse(result).Send(c)
+}
+
+func (h *delivery) UpdateByID(c echo.Context) error {
+	payload := new(dto.UpdateCaseRequest)
+	if err := c.Bind(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
+	}
+
+	if err := c.Validate(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
+	}
+
+	result, err := h.Factory.Usecase.Case.UpdateByID(c.Request().Context(), *payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}

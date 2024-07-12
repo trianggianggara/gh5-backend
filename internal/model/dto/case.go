@@ -14,14 +14,14 @@ type (
 
 type (
 	UpdateCaseRequest struct {
-		ID              string `param:"id" validate:"required"`
-		CaseNumber      string `json:"case_number"`
-		CaseDescription string `json:"case_description" validate:"required"`
-		CaseDetail      string `json:"case_detail"`
-		Status          string `json:"status" validate:"required"`
-		IsActive        bool   `json:"is_active"`
-		ContributorID   string `json:"contributor_id"`
-		UploaderID      string `json:"uploader_id"`
+		ID              string  `param:"id" validate:"required"`
+		CaseNumber      string  `json:"case_number"`
+		CaseDescription string  `json:"case_description" validate:"required"`
+		CaseDetail      string  `json:"case_detail"`
+		Status          string  `json:"status" validate:"required"`
+		IsActive        *bool   `json:"is_active"`
+		ContributorID   *string `json:"contributor_id"`
+		UploaderID      *string `json:"uploader_id"`
 	}
 )
 

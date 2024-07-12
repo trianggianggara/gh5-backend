@@ -60,13 +60,6 @@ func (r *Repository[T]) Create(ctx context.Context, data T) (T, error) {
 	return data, r.maskError(err)
 }
 
-func (r *Repository[T]) Update(ctx context.Context, data T) (T, error) {
-	r.checkTrx(ctx)
-	query := r.conn.Model(r.entity)
-	err := query.Updates(&data).Error
-	return data, r.maskError(err)
-}
-
 func (r *Repository[T]) Delete(ctx context.Context, entity *T) error {
 	r.checkTrx(ctx)
 	err := r.conn.Model(r.entity).Delete(entity).Error

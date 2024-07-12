@@ -32,3 +32,24 @@ func (r *Repository[T]) FindByEmail(ctx context.Context, email string) (*model.U
 	}
 	return result, nil
 }
+
+func (r *Repository[T]) UpdatesByID(ctx context.Context, id string, data *entity.CaseModel) (model.CaseModel, error) {
+	query := r.getConn().Table(r.entityName)
+	result := model.CaseModel{}
+	err := query.Where("id", id).Updates(
+		map[string]interface{}{
+			"id":               data.ID,
+			"case_number":      data.CaseNumber,
+			"case_description": data.CaseDescription,
+			"case_detail":      data.CaseDetail,
+			"is_active":        data.IsActive,
+			"status":           data.Status,
+			"contributor_id":   data.ContributorID,
+			"uploader_id":      data.UploaderID,
+		},
+	).Error
+	if err != nil {
+		return result, r.maskError(err)
+	}
+	return result, nil
+}
