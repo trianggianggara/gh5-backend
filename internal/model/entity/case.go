@@ -44,6 +44,7 @@ func (m *CaseModel) BeforeCreate(tx *gorm.DB) (err error) {
 	m.IsActive = true
 	m.CreatedAt = *date.DateTodayLocal()
 	m.CreatedBy = constant.DB_DEFAULT_CREATED_BY
+	m.Status = "Pending"
 	return
 }
 

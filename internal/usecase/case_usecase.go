@@ -159,7 +159,6 @@ func (u *CaseUsecase) Create(ctx context.Context, payload dto.CreateCaseRequest)
 				CaseNumber:      payload.CaseNumber,
 				CaseDescription: payload.CaseDescription,
 				CaseDetail:      payload.CaseDetail,
-				Status:          payload.Status,
 				UploaderID:      payload.UploaderID,
 				ClientID:        payload.ClientID,
 				ContributorID:   payload.ContributorID,
