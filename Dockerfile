@@ -2,7 +2,8 @@
 # STEP 1 build executable binary
 ############################
 FROM golang:1.22.4-alpine AS builder
-RUN apk update && apk add --no-cache git && apt-get install -y ca-certificates
+RUN apk update && apk add --no-cache git && apk add --no-cache ca-certificates
+
 
 WORKDIR /app
 COPY . .
