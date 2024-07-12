@@ -49,7 +49,7 @@ func (u *VoteUsecase) VoteCountByCaseID(ctx context.Context, payload dto.ByIDReq
 	return result, nil
 }
 
-func (u *VoteUsecase) Upvote(ctx context.Context, payload dto.UpvoteRequest) (dto.VoteResponse, error) {
+func (u *VoteUsecase) Vote(ctx context.Context, payload dto.UpvoteRequest) (dto.VoteResponse, error) {
 	var (
 		result   dto.VoteResponse
 		data     model.VoteModel
@@ -69,10 +69,18 @@ func (u *VoteUsecase) Upvote(ctx context.Context, payload dto.UpvoteRequest) (dt
 	}
 
 	if vote.ID != "" {
-		data, err = u.RepositoryFactory.VoteRepository.Revote(ctx, payload.CaseID, payload.UserID)
-		if err != nil {
-			u.RepositoryFactory.Log.Warnf("Failed to revote : %+v", err)
-			return result, err
+		if vote.IsActive {
+			data, err = u.RepositoryFactory.VoteRepository.Downvote(ctx, payload.CaseID, payload.UserID)
+			if err != nil {
+				u.RepositoryFactory.Log.Warnf("Failed to revote : %+v", err)
+				return result, err
+			}
+		} else {
+			data, err = u.RepositoryFactory.VoteRepository.Revote(ctx, payload.CaseID, payload.UserID)
+			if err != nil {
+				u.RepositoryFactory.Log.Warnf("Failed create Vote : %+v", err)
+				return result, err
+			}
 		}
 	} else {
 		data, err = u.RepositoryFactory.VoteRepository.Create(ctx, voteData)

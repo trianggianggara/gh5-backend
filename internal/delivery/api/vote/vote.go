@@ -19,8 +19,7 @@ func NewDelivery(f factory.Factory) *delivery {
 func (h *delivery) Route(g *echo.Group) {
 	g.GET("/count", h.VoteCount)
 	g.GET("/count/:id", h.VoteCountByCaseID)
-	g.POST("/upvote", h.Upvote)
-	g.PUT("/downvote", h.Downvote)
+	g.POST("", h.Vote)
 }
 
 func (h *delivery) VoteCount(c echo.Context) error {
@@ -50,7 +49,7 @@ func (h *delivery) VoteCountByCaseID(c echo.Context) error {
 	return res.CustomSuccessBuilder(200, result, "Get roles by id success").Send(c)
 }
 
-func (h *delivery) Upvote(c echo.Context) error {
+func (h *delivery) Vote(c echo.Context) error {
 	payload := new(dto.UpvoteRequest)
 	if err := c.Bind(payload); err != nil {
 		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
@@ -59,7 +58,7 @@ func (h *delivery) Upvote(c echo.Context) error {
 		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
 
-	result, err := h.Factory.Usecase.Vote.Upvote(c.Request().Context(), *payload)
+	result, err := h.Factory.Usecase.Vote.Vote(c.Request().Context(), *payload)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}
