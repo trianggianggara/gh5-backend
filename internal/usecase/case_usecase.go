@@ -22,73 +22,15 @@ func NewCaseUsecase(f repository.Factory) *CaseUsecase {
 func (u *CaseUsecase) Find(ctx context.Context) ([]dto.CaseResponse, error) {
 	var result []dto.CaseResponse
 
-	Cases, err := u.RepositoryFactory.CaseRepository.Find(ctx)
+	cases, err := u.RepositoryFactory.CaseRepository.FindAll(ctx)
 	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find all cases : %+v", err)
+		u.RepositoryFactory.Log.Warnf("Failed to find all cases: %+v", err)
 		return result, err
 	}
 
-	lawyerUsers, err := u.RepositoryFactory.UserRepository.FindLawyers(ctx)
-	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find lawyer users id : %+v", err)
-		return result, err
-	}
-
-	lawyers, err := u.RepositoryFactory.LawyerRepository.Find(ctx)
-	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find layers: %+v", err)
-		return result, err
-	}
-
-	lawyerMap := make(map[string]model.LawyerModel)
-	for _, lawyer := range lawyers {
-		lawyerMap[lawyer.ID] = lawyer
-	}
-
-	lawyerUserMap := make(map[string]model.UserModel)
-	for _, lawyerUser := range lawyerUsers {
-		lawyerUserMap[lawyerUser.ID] = lawyerUser
-	}
-
-	for _, Case := range Cases {
-		var (
-			contributorID string
-			uploaderID    string
-		)
-
-		if Case.ContributorID != nil {
-			contributorID = *Case.ContributorID
-
-			contributor := lawyerUserMap[contributorID]
-			Case.Contributor = &contributor
-
-			lawyer := lawyerMap[*contributor.LawyerID]
-			Case.Contributor.Lawyer = &lawyer
-		}
-
-		if Case.UploaderID != nil {
-			uploaderID = *Case.UploaderID
-
-			uploader := lawyerUserMap[uploaderID]
-			Case.Uploader = &uploader
-
-			lawyer := lawyerMap[*uploader.LawyerID]
-			Case.Uploader.Lawyer = &lawyer
-
-		}
-
-		if Case.ClientID != nil {
-			client, err := u.RepositoryFactory.UserRepository.FindByID(ctx, Case.ClientID)
-			if err != nil {
-				u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
-				return result, err
-			}
-
-			Case.Client = client
-		}
-
+	for _, c := range cases {
 		result = append(result, dto.CaseResponse{
-			Data: Case,
+			Data: c,
 		})
 	}
 

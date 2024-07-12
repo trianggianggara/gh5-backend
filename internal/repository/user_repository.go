@@ -33,16 +33,6 @@ func (r *Repository[T]) FindByEmail(ctx context.Context, email string) (*model.U
 	return result, nil
 }
 
-func (r *Repository[T]) FindLawyers(ctx context.Context) ([]model.UserModel, error) {
-	var result []model.UserModel
-	query := r.getConn().Model(&model.UserModel{})
-	err := query.Joins("LEFT JOIN roles ON roles.id = users.role_id").Where("roles.role_code = ?", "LYR").Find(&result).Error
-	if err != nil {
-		return nil, r.maskError(err)
-	}
-	return result, nil
-}
-
 func (r *Repository[T]) UpdatesByID(ctx context.Context, id string, data *entity.CaseModel) (model.CaseModel, error) {
 	query := r.getConn().Table(r.entityName)
 	result := model.CaseModel{}
