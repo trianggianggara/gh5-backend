@@ -18,7 +18,7 @@ type CaseEntity struct {
 	CaseNumber      string  `json:"case_number" gorm:"size:50"`
 	CaseDescription string  `json:"case_description" gorm:"not null"`
 	CaseDetail      string  `json:"case_detail"`
-	Status          string  `json:"status" validate:"required" gorm:"not null"`
+	Status          string  `json:"status" gorm:"not null"`
 	IsActive        bool    `json:"is_active"`
 	ClientID        *string `json:"client_id"`
 	ContributorID   *string `json:"contributor_id"`
