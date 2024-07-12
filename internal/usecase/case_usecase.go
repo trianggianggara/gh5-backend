@@ -132,15 +132,16 @@ func (u *CaseUsecase) Create(ctx context.Context, payload dto.CreateCaseRequest)
 		}
 	)
 
-	docUrl, err := document.UploadAndSavePath(ctx, payload.Document, "case_docs", uuid.NewString())
-	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed to upload document: %+v", err)
-		return result, err
+	if payload.Document != nil {
+		docUrl, err := document.UploadAndSavePath(ctx, payload.Document, "case_docs", uuid.NewString())
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed to upload document: %+v", err)
+			return result, err
+		}
+		caseData.Document = docUrl
 	}
 
-	caseData.Document = docUrl
-
-	data, err = u.RepositoryFactory.CaseRepository.Create(ctx, caseData)
+	data, err := u.RepositoryFactory.CaseRepository.Create(ctx, caseData)
 	if err != nil {
 		u.RepositoryFactory.Log.Warnf("Failed create case : %+v", err)
 		return result, err
@@ -197,13 +198,14 @@ func (u *CaseUsecase) UpdateByID(ctx context.Context, payload dto.UpdateCaseRequ
 			existingData.ContributorID = payload.ContributorID
 		}
 
-		docUrl, err := document.UploadAndSavePath(ctx, payload.Document, "case_docs", uuid.NewString())
-		if err != nil {
-			u.RepositoryFactory.Log.Warnf("Failed to upload document: %+v", err)
-			return err
+		if payload.Document != nil {
+			docUrl, err := document.UploadAndSavePath(ctx, payload.Document, "case_docs", uuid.NewString())
+			if err != nil {
+				u.RepositoryFactory.Log.Warnf("Failed to upload document: %+v", err)
+				return err
+			}
+			existingData.Document = docUrl
 		}
-
-		existingData.Document = docUrl
 
 		data, err = u.RepositoryFactory.CaseRepository.UpdatesByID(ctx, payload.ID, existingData)
 		if err != nil {
