@@ -5,6 +5,7 @@ import (
 	"gh5-backend/internal/factory/repository"
 	"gh5-backend/internal/model/dto"
 	model "gh5-backend/internal/model/entity"
+	"gh5-backend/pkg/utils/trxmanager"
 )
 
 type LawyerUsecase struct {
@@ -31,21 +32,32 @@ func (u *LawyerUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (
 	return result, nil
 }
 
-func (u *LawyerUsecase) Create(ctx context.Context, payload dto.CreateLawyerRequest) (dto.LawyerResponse, error) {
-	var (
-		result dto.LawyerResponse
-		data   model.LawyerModel
-		Lawyer = model.LawyerModel{
-			LawyerEntity: model.LawyerEntity{
-				Specialization: payload.Specialization,
-			},
-			Context: ctx,
-		}
-	)
+func (u *LawyerUsecase) UpdateByID(ctx context.Context, payload dto.UpdateLawyerRequest) (result dto.LawyerResponse, err error) {
+	var data model.LawyerModel
 
-	data, err := u.RepositoryFactory.LawyerRepository.Create(ctx, Lawyer)
-	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed create Lawyer : %+v", err)
+	if err := trxmanager.New(u.RepositoryFactory.Db).WithTrx(ctx, func(ctx context.Context) error {
+		existingData, err := u.RepositoryFactory.LawyerRepository.FindByID(ctx, payload.ID)
+		if err != nil {
+			return err
+		}
+
+		if payload.Specialization != nil {
+			existingData.Specialization = *payload.Specialization
+		}
+
+		if payload.Position != nil {
+			existingData.Position = *payload.Position
+		}
+
+		data, err = u.RepositoryFactory.LawyerRepository.UpdatesByID(ctx, payload.ID, existingData)
+		if err != nil {
+			return err
+		}
+
+		data = *existingData
+
+		return nil
+	}); err != nil {
 		return result, err
 	}
 

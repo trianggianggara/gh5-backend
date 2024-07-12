@@ -35,6 +35,7 @@ func Init() {
 				&model.RoleModel{},
 				&model.LawyerModel{},
 				&model.CaseModel{},
+				&model.VoteModel{},
 			},
 			IsAutoMigrate: true,
 		},

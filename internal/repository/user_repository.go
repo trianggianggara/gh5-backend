@@ -53,3 +53,12 @@ func (r *Repository[T]) UpdatesByID(ctx context.Context, id string, data *entity
 	}
 	return result, nil
 }
+
+func (r *Repository[T]) UpdateLawyerID(ctx context.Context, id string, lawyerID string) error {
+	query := r.getConn().Table(r.entityName)
+	err := query.Where("id", id).Update("lawyer_id", id).Error
+	if err != nil {
+		return r.maskError(err)
+	}
+	return nil
+}

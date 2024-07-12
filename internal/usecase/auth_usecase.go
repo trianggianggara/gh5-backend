@@ -70,11 +70,17 @@ func (s *AuthUsecase) Register(ctx context.Context, payload dto.AuthRegisterRequ
 				LawyerEntity: model.LawyerEntity{},
 				Context:      ctx,
 			}
-			_, err = s.RepositoryFactory.LawyerRepository.Create(ctx, lawyer)
+			lawyer, err = s.RepositoryFactory.LawyerRepository.Create(ctx, lawyer)
+			if err != nil {
+				return err
+			}
+
+			err = s.RepositoryFactory.UserRepository.UpdateLawyerID(ctx, data.ID, lawyer.ID)
 			if err != nil {
 				return err
 			}
 		}
+
 		return nil
 	}); err != nil {
 		return result, err
