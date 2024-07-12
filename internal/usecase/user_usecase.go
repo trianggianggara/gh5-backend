@@ -78,7 +78,7 @@ func (u *UserUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 		return result, err
 	}
 
-	if data.Lawyer != nil {
+	if data.LawyerID != nil {
 		lawyer, err := u.RepositoryFactory.LawyerRepository.FindByID(ctx, data.LawyerID)
 		if err != nil {
 			u.RepositoryFactory.Log.Warnf("Failed get lawyer by id: %+v", err)
