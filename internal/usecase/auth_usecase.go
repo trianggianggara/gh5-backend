@@ -65,7 +65,7 @@ func (s *AuthUsecase) Register(ctx context.Context, payload dto.AuthRegisterRequ
 			return err
 		}
 
-		if role.RoleCode == "LYR" || role.RoleCode == "LSD" {
+		if role.RoleCode == "LYR" {
 			lawyer := model.LawyerModel{
 				LawyerEntity: model.LawyerEntity{
 					UserID: data.ID,
