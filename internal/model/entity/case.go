@@ -82,3 +82,26 @@ type CaseDetails struct {
 func (CaseDetails) TableName() string {
 	return "case_details"
 }
+
+type LawyerCase struct {
+	CaseID          string    `json:"case_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	CaseNumber      string    `json:"case_number"`
+	CaseDescription string    `json:"case_description"`
+	CaseDetail      string    `json:"case_detail"`
+	Status          string    `json:"status"`
+	CaseName        string    `json:"case_name"`
+	CaseType        string    `json:"case_type"`
+	ClientID        string    `json:"client_id"`
+	ContributorID   string    `json:"contributor_id"`
+	UploaderID      string    `json:"uploader_id"`
+	LawyerID        string    `json:"lawyer_id"`
+
+	Client      *UserModel `json:"client" gorm:"foreignkey:ClientID"`
+	Contributor *UserModel `json:"contributor" gorm:"foreignkey:ContributorID"`
+	Uploader    *UserModel `json:"uploader" gorm:"foreignkey:UploaderID"`
+}
+
+func (LawyerCase) TableName() string {
+	return "lawyer_cases"
+}

@@ -55,6 +55,24 @@ func (u *CaseUsecase) FindByUserID(ctx context.Context, userID string) ([]dto.Ca
 	return result, nil
 }
 
+func (u *CaseUsecase) FindByLawyerID(ctx context.Context, lawyerID string, status string) ([]dto.LawyerCaseResponse, error) {
+	var result []dto.LawyerCaseResponse
+
+	cases, err := u.RepositoryFactory.CaseRepository.FindCaseByLawyerID(ctx, lawyerID, status)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed to find all cases: %+v", err)
+		return result, err
+	}
+
+	for _, c := range cases {
+		result = append(result, dto.LawyerCaseResponse{
+			Data: c,
+		})
+	}
+
+	return result, nil
+}
+
 func (u *CaseUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dto.CaseResponse, error) {
 	var result dto.CaseResponse
 

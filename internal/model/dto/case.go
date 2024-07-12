@@ -62,3 +62,15 @@ type (
 		} `json:"body"`
 	}
 )
+
+type (
+	LawyerCaseResponse struct {
+		Data model.LawyerCase
+	}
+	LawyerCaseResponseDoc struct {
+		Body struct {
+			Meta res.Meta     `json:"meta"`
+			Data CaseResponse `json:"data"`
+		} `json:"body"`
+	}
+)
