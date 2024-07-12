@@ -31,6 +31,17 @@ func (u *UserUsecase) Find(ctx context.Context) ([]dto.UserResponse, error) {
 		return result, err
 	}
 
+	lawyers, err := u.RepositoryFactory.LawyerRepository.Find(ctx)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find all lawyers: %+v", err)
+		return result, err
+	}
+
+	lawyerMap := make(map[string]model.LawyerModel)
+	for _, lawyer := range lawyers {
+		lawyerMap[lawyer.ID] = lawyer
+	}
+
 	roleMap := make(map[string]model.RoleModel)
 	for _, role := range roles {
 		roleMap[role.ID] = role
@@ -39,6 +50,11 @@ func (u *UserUsecase) Find(ctx context.Context) ([]dto.UserResponse, error) {
 	for _, user := range users {
 		roleData := roleMap[user.RoleID]
 		user.Role = &roleData
+
+		if user.LawyerID != nil {
+			lawyerData := lawyerMap[*user.LawyerID]
+			user.Lawyer = &lawyerData
+		}
 		result = append(result, dto.UserResponse{
 			Data: user,
 		})
@@ -60,6 +76,15 @@ func (u *UserUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 	if err != nil {
 		u.RepositoryFactory.Log.Warnf("Failed find all roles: %+v", err)
 		return result, err
+	}
+
+	if data.Lawyer != nil {
+		lawyer, err := u.RepositoryFactory.LawyerRepository.FindByID(ctx, data.LawyerID)
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed get lawyer by id: %+v", err)
+			return result, err
+		}
+		data.Lawyer = lawyer
 	}
 
 	data.Role = role
