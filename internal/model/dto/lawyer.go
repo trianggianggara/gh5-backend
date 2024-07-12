@@ -15,6 +15,7 @@ type (
 type (
 	UpdateLawyerRequest struct {
 		ID             string `param:"id" validate:"required"`
+		Position       string `param:"position" validate:"required"`
 		Specialization string `json:"specialization" validate:"required"`
 		UserID         string `json:"user_id" validate:"required" gorm:"not null"`
 		IsActive       bool   `json:"is_active"`

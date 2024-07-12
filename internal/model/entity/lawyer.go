@@ -13,11 +13,9 @@ import (
 )
 
 type LawyerEntity struct {
-	Specialization string `json:"specialization" validate:"required"`
-	UserID         string `json:"user_id" validate:"required" gorm:"not null"`
+	Position       string `json:"position"`
+	Specialization string `json:"specialization"`
 	IsActive       bool   `json:"is_active"`
-
-	User *UserModel `json:"user" gorm:"foreignkey:UserID"`
 }
 
 type LawyerModel struct {

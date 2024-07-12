@@ -78,7 +78,7 @@ func (r *Repository[T]) FindByID(ctx context.Context, id any) (*T, error) {
 	r.checkTrx(ctx)
 	query := r.conn.Model(r.entity)
 	result := new(T)
-	err := query.Where("id", id).First(result).Error
+	err := query.Where("id = ?", id).First(result).Error
 	if err != nil {
 		return nil, r.maskError(err)
 	}

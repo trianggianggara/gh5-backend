@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"gh5-backend/internal/factory/repository"
 	"gh5-backend/internal/model/dto"
 	model "gh5-backend/internal/model/entity"
@@ -26,27 +25,55 @@ func (u *CaseUsecase) Find(ctx context.Context) ([]dto.CaseResponse, error) {
 		return result, err
 	}
 
-	lawyers, err := u.RepositoryFactory.UserRepository.FindLawyers(ctx)
+	lawyerUsers, err := u.RepositoryFactory.UserRepository.FindLawyers(ctx)
 	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find contributor by id : %+v", err)
+		u.RepositoryFactory.Log.Warnf("Failed find lawyer users id : %+v", err)
 		return result, err
 	}
 
-	fmt.Println(lawyers)
+	lawyers, err := u.RepositoryFactory.LawyerRepository.Find(ctx)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find layers: %+v", err)
+		return result, err
+	}
 
-	lawyerMap := make(map[string]model.UserModel)
+	lawyerMap := make(map[string]model.LawyerModel)
 	for _, lawyer := range lawyers {
 		lawyerMap[lawyer.ID] = lawyer
 	}
 
-	for _, Case := range Cases {
-		contributorID := *Case.ContributorID
-		uploaderID := *Case.UploaderID
+	lawyerUserMap := make(map[string]model.UserModel)
+	for _, lawyerUser := range lawyerUsers {
+		lawyerUserMap[lawyerUser.ID] = lawyerUser
+	}
 
-		uploader := lawyerMap[uploaderID]
-		contributor := lawyerMap[contributorID]
-		Case.Uploader = &uploader
-		Case.Contributor = &contributor
+	for _, Case := range Cases {
+		var (
+			contributorID string
+			uploaderID    string
+		)
+
+		if Case.ContributorID != nil {
+			contributorID = *Case.ContributorID
+
+			contributor := lawyerUserMap[contributorID]
+			Case.Contributor = &contributor
+
+			lawyer := lawyerMap[*contributor.LawyerID]
+			Case.Contributor.Lawyer = &lawyer
+		}
+
+		if Case.UploaderID != nil {
+			uploaderID = *Case.UploaderID
+
+			uploader := lawyerUserMap[uploaderID]
+			Case.Uploader = &uploader
+
+			lawyer := lawyerMap[*uploader.LawyerID]
+			Case.Uploader.Lawyer = &lawyer
+
+		}
+
 		result = append(result, dto.CaseResponse{
 			Data: Case,
 		})
@@ -64,20 +91,24 @@ func (u *CaseUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 		return result, err
 	}
 
-	userContributor, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.ContributorID)
-	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find contributor by id : %+v", err)
-		return result, err
+	if data.ContributorID != nil {
+		userContributor, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.ContributorID)
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed find contributor by id : %+v", err)
+			return result, err
+		}
+		data.Contributor = userContributor
 	}
 
-	userUploader, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.UploaderID)
-	if err != nil {
-		u.RepositoryFactory.Log.Warnf("Failed find uploader by id : %+v", err)
-		return result, err
-	}
+	if data.UploaderID != nil {
+		userUploader, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.UploaderID)
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed find uploader by id : %+v", err)
+			return result, err
+		}
+		data.Uploader = userUploader
 
-	data.Contributor = userContributor
-	data.Uploader = userUploader
+	}
 
 	result = dto.CaseResponse{
 		Data: *data,

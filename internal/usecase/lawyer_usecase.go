@@ -38,7 +38,6 @@ func (u *LawyerUsecase) Create(ctx context.Context, payload dto.CreateLawyerRequ
 		Lawyer = model.LawyerModel{
 			LawyerEntity: model.LawyerEntity{
 				Specialization: payload.Specialization,
-				UserID:         payload.UserID,
 			},
 			Context: ctx,
 		}

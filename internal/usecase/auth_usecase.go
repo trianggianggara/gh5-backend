@@ -67,10 +67,8 @@ func (s *AuthUsecase) Register(ctx context.Context, payload dto.AuthRegisterRequ
 
 		if role.RoleCode == "LYR" {
 			lawyer := model.LawyerModel{
-				LawyerEntity: model.LawyerEntity{
-					UserID: data.ID,
-				},
-				Context: ctx,
+				LawyerEntity: model.LawyerEntity{},
+				Context:      ctx,
 			}
 			_, err = s.RepositoryFactory.LawyerRepository.Create(ctx, lawyer)
 			if err != nil {
