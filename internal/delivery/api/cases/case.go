@@ -53,9 +53,11 @@ func (h *delivery) GetByID(c echo.Context) error {
 
 func (h *delivery) Create(c echo.Context) error {
 	payload := new(dto.CreateCaseRequest)
-	if err := c.Bind(payload); err != nil {
+
+	if err := h.bindCreate(c, payload); err != nil {
 		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
+
 	if err := c.Validate(payload); err != nil {
 		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
 	}
@@ -70,7 +72,8 @@ func (h *delivery) Create(c echo.Context) error {
 
 func (h *delivery) UpdateByID(c echo.Context) error {
 	payload := new(dto.UpdateCaseRequest)
-	if err := c.Bind(payload); err != nil {
+
+	if err := h.bindUpdate(c, payload); err != nil {
 		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
 	}
 
@@ -84,4 +87,84 @@ func (h *delivery) UpdateByID(c echo.Context) error {
 	}
 
 	return res.SuccessResponse(result).Send(c)
+}
+
+func (d *delivery) bindCreate(c echo.Context, request *dto.CreateCaseRequest) error {
+	caseName := c.FormValue("case_name")
+	caseType := c.FormValue("case_type")
+	caseNumber := c.FormValue("case_number")
+	caseDescription := c.FormValue("case_description")
+	caseDetail := c.FormValue("case_detail")
+
+	if clientID := c.FormValue("client_id"); clientID != "" {
+		request.ClientID = &clientID
+	} else {
+		request.ClientID = nil
+	}
+
+	if contributorID := c.FormValue("contributor_id"); contributorID != "" {
+		request.ContributorID = &contributorID
+	} else {
+		request.ContributorID = nil
+	}
+
+	if uploaderID := c.FormValue("uploader_id"); uploaderID != "" {
+		request.UploaderID = &uploaderID
+	} else {
+		request.UploaderID = nil
+	}
+
+	// file
+	if document, err := c.FormFile("document"); err == nil {
+		request.Document = document
+	} else {
+		request.Document = nil
+	}
+
+	request.CaseName = caseName
+	request.CaseType = caseType
+	request.CaseNumber = caseNumber
+	request.CaseDescription = caseDescription
+	request.CaseDetail = caseDetail
+
+	return nil
+}
+
+func (d *delivery) bindUpdate(c echo.Context, request *dto.UpdateCaseRequest) error {
+	id := c.Param("id")
+	caseName := c.FormValue("case_name")
+	caseType := c.FormValue("case_type")
+	caseNumber := c.FormValue("case_number")
+	caseDescription := c.FormValue("case_description")
+	caseDetail := c.FormValue("case_detail")
+	status := c.FormValue("status")
+
+	if contributorID := c.FormValue("contributor_id"); contributorID != "" {
+		request.ContributorID = &contributorID
+	} else {
+		request.ContributorID = nil
+	}
+
+	if uploaderID := c.FormValue("uploader_id"); uploaderID != "" {
+		request.UploaderID = &uploaderID
+	} else {
+		request.UploaderID = nil
+	}
+
+	// file
+	if document, err := c.FormFile("document"); err == nil {
+		request.Document = document
+	} else {
+		request.Document = nil
+	}
+
+	request.ID = id
+	request.CaseName = caseName
+	request.CaseType = caseType
+	request.CaseNumber = caseNumber
+	request.CaseDescription = caseDescription
+	request.CaseDetail = caseDetail
+	request.Status = status
+
+	return nil
 }

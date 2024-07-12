@@ -5,7 +5,10 @@ import (
 	"gh5-backend/internal/factory/repository"
 	"gh5-backend/internal/model/dto"
 	model "gh5-backend/internal/model/entity"
+	"gh5-backend/pkg/document"
 	"gh5-backend/pkg/utils/trxmanager"
+
+	"github.com/google/uuid"
 )
 
 type CaseUsecase struct {
@@ -74,13 +77,15 @@ func (u *CaseUsecase) Find(ctx context.Context) ([]dto.CaseResponse, error) {
 
 		}
 
-		client, err := u.RepositoryFactory.UserRepository.FindByID(ctx, Case.ClientID)
-		if err != nil {
-			u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
-			return result, err
-		}
+		if Case.ClientID != nil {
+			client, err := u.RepositoryFactory.UserRepository.FindByID(ctx, Case.ClientID)
+			if err != nil {
+				u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
+				return result, err
+			}
 
-		Case.Client = client
+			Case.Client = client
+		}
 
 		result = append(result, dto.CaseResponse{
 			Data: Case,
@@ -167,7 +172,15 @@ func (u *CaseUsecase) Create(ctx context.Context, payload dto.CreateCaseRequest)
 		}
 	)
 
-	data, err := u.RepositoryFactory.CaseRepository.Create(ctx, caseData)
+	docUrl, err := document.UploadAndSavePath(ctx, payload.Document, "case_docs", uuid.NewString())
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed to upload document: %+v", err)
+		return result, err
+	}
+
+	caseData.Document = docUrl
+
+	data, err = u.RepositoryFactory.CaseRepository.Create(ctx, caseData)
 	if err != nil {
 		u.RepositoryFactory.Log.Warnf("Failed create case : %+v", err)
 		return result, err
@@ -223,6 +236,14 @@ func (u *CaseUsecase) UpdateByID(ctx context.Context, payload dto.UpdateCaseRequ
 		if payload.ContributorID != nil {
 			existingData.ContributorID = payload.ContributorID
 		}
+
+		docUrl, err := document.UploadAndSavePath(ctx, payload.Document, "case_docs", uuid.NewString())
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed to upload document: %+v", err)
+			return err
+		}
+
+		existingData.Document = docUrl
 
 		data, err = u.RepositoryFactory.CaseRepository.UpdatesByID(ctx, payload.ID, existingData)
 		if err != nil {
