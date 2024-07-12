@@ -31,7 +31,7 @@ type (
 		CaseDescription string                `json:"case_description"`
 		CaseDetail      string                `json:"case_detail"`
 		Document        *multipart.FileHeader `json:"document"`
-		Status          string                `json:"status" validate:"required"`
+		Status          string                `json:"status"`
 		IsActive        *bool                 `json:"is_active"`
 		ContributorID   *string               `json:"contributor_id"`
 		UploaderID      *string               `json:"uploader_id"`

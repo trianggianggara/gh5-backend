@@ -23,7 +23,8 @@ func NewUserRepository(conn *gorm.DB, log *logrus.Logger) *UserRepository {
 	}
 }
 
-func (r *Repository[T]) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*model.UserModel, error) {
+	r.checkTrx(ctx)
 	query := r.getConn().Model(model.UserModel{})
 	result := new(model.UserModel)
 	err := query.Where("email", email).Preload("Role").First(result).Error
@@ -33,30 +34,10 @@ func (r *Repository[T]) FindByEmail(ctx context.Context, email string) (*model.U
 	return result, nil
 }
 
-func (r *Repository[T]) UpdatesByID(ctx context.Context, id string, data *entity.CaseModel) (model.CaseModel, error) {
+func (r *UserRepository) UpdateLawyerID(ctx context.Context, id string, lawyerID string) error {
+	r.checkTrx(ctx)
 	query := r.getConn().Table(r.entityName)
-	result := model.CaseModel{}
-	err := query.Where("id", id).Updates(
-		map[string]interface{}{
-			"id":               data.ID,
-			"case_number":      data.CaseNumber,
-			"case_description": data.CaseDescription,
-			"case_detail":      data.CaseDetail,
-			"is_active":        data.IsActive,
-			"status":           data.Status,
-			"contributor_id":   data.ContributorID,
-			"uploader_id":      data.UploaderID,
-		},
-	).Error
-	if err != nil {
-		return result, r.maskError(err)
-	}
-	return result, nil
-}
-
-func (r *Repository[T]) UpdateLawyerID(ctx context.Context, id string, lawyerID string) error {
-	query := r.getConn().Table(r.entityName)
-	err := query.Where("id", id).Update("lawyer_id", id).Error
+	err := query.Where("id", id).Update("lawyer_id", lawyerID).Error
 	if err != nil {
 		return r.maskError(err)
 	}

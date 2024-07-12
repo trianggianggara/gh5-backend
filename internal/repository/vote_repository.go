@@ -23,7 +23,7 @@ func NewVoteRepository(conn *gorm.DB, log *logrus.Logger) *VoteRepository {
 	}
 }
 
-func (r *Repository[T]) Downvote(ctx context.Context, caseID string, userID string) (model.VoteModel, error) {
+func (r *VoteRepository) Downvote(ctx context.Context, caseID string, userID string) (model.VoteModel, error) {
 	query := r.getConn().Model(model.VoteModel{})
 	result := model.VoteModel{}
 	err := query.Where("case_id = ? AND user_id = ?", caseID, userID).Update("is_active", false).Error
