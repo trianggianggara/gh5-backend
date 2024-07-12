@@ -12,13 +12,6 @@ type (
 	}
 )
 
-type (
-	DownvoteRequest struct {
-		UserID string `queryparam:"user_id"`
-		CaseID string `queryparam:"case_id"`
-	}
-)
-
 // response
 type (
 	VoteResponse struct {
@@ -28,6 +21,18 @@ type (
 		Body struct {
 			Meta res.Meta     `json:"meta"`
 			Data VoteResponse `json:"data"`
+		} `json:"body"`
+	}
+)
+
+type (
+	VoteCountResponse struct {
+		Data model.VoteCount
+	}
+	VoteCountResponseDoc struct {
+		Body struct {
+			Meta res.Meta          `json:"meta"`
+			Data VoteCountResponse `json:"data"`
 		} `json:"body"`
 	}
 )

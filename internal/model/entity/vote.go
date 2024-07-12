@@ -48,3 +48,10 @@ func (m *VoteModel) BeforeUpdate(tx *gorm.DB) (err error) {
 	}
 	return
 }
+
+type VoteCount struct {
+	CaseID    string `json:"case_id"`
+	VoteCount int    `json:"vote_count"`
+
+	Case CaseModel `json:"case" gorm:"foreignkey:CaseID"`
+}

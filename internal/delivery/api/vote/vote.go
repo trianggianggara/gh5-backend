@@ -17,18 +17,37 @@ func NewDelivery(f factory.Factory) *delivery {
 }
 
 func (h *delivery) Route(g *echo.Group) {
-	g.GET("", h.Get)
+	g.GET("/count", h.VoteCount)
+	g.GET("/count/:id", h.VoteCountByCaseID)
 	g.POST("/upvote", h.Upvote)
 	g.PUT("/downvote", h.Downvote)
 }
 
-func (h *delivery) Get(c echo.Context) error {
-	result, err := h.Factory.Usecase.User.Find(c.Request().Context())
+func (h *delivery) VoteCount(c echo.Context) error {
+	result, err := h.Factory.Usecase.Vote.VouteCount(c.Request().Context())
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}
 
 	return res.CustomSuccessBuilder(200, result, "Get all users success").Send(c)
+}
+
+func (h *delivery) VoteCountByCaseID(c echo.Context) error {
+	payload := new(dto.ByIDRequest)
+	if err := c.Bind(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
+	}
+
+	if err := c.Validate(payload); err != nil {
+		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
+	}
+
+	result, err := h.Factory.Usecase.Vote.VoteCountByCaseID(c.Request().Context(), *payload)
+	if err != nil {
+		return res.ErrorResponse(err).Send(c)
+	}
+
+	return res.CustomSuccessBuilder(200, result, "Get roles by id success").Send(c)
 }
 
 func (h *delivery) Upvote(c echo.Context) error {
@@ -49,15 +68,10 @@ func (h *delivery) Upvote(c echo.Context) error {
 }
 
 func (h *delivery) Downvote(c echo.Context) error {
-	payload := new(dto.DownvoteRequest)
-	if err := c.Bind(payload); err != nil {
-		return res.ErrorBuilder(&res.ErrorConstant.BadRequest, err).Send(c)
-	}
-	if err := c.Validate(payload); err != nil {
-		return res.ErrorBuilder(&res.ErrorConstant.Validation, err).Send(c)
-	}
+	caseID := c.QueryParam("case_id")
+	userID := c.QueryParam("user_id")
 
-	result, err := h.Factory.Usecase.Vote.Downvote(c.Request().Context(), *payload)
+	result, err := h.Factory.Usecase.Vote.Downvote(c.Request().Context(), caseID, userID)
 	if err != nil {
 		return res.ErrorResponse(err).Send(c)
 	}
