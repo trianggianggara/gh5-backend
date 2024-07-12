@@ -115,6 +115,9 @@ func (u *CaseUsecase) UpdateByID(ctx context.Context, payload dto.UpdateCaseRequ
 		if err != nil {
 			return err
 		}
+
+		data = *existingData
+
 		return nil
 	}); err != nil {
 		return result, err
