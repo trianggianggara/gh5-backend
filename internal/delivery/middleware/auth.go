@@ -65,10 +65,19 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 			email = ""
 		}
 
+		var roleCode string
+		destructRoleCode := token.Claims.(jwt.MapClaims)["role_code"]
+		if destructRoleCode != nil {
+			roleCode = destructRoleCode.(string)
+		} else {
+			roleCode = ""
+		}
+
 		authCtx := &baseModel.AuthContext{
 			ID:    id,
 			Name:  name,
 			Email: email,
+			RoleCode: roleCode,
 		}
 		ctx := ctxval.SetAuthValue(c.Request().Context(), authCtx)
 		newRequest := c.Request().WithContext(ctx)

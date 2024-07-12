@@ -6,9 +6,10 @@ import (
 )
 
 type AuthContext struct {
-	ID    uuid.UUID
-	Name  string
-	Email string
+	ID       uuid.UUID
+	Name     string
+	Email    string
+	RoleCode string
 }
 
 type TrxContext struct {
