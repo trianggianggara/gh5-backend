@@ -26,6 +26,7 @@ FROM scratch
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app/gh5-backend /app/gh5-backend
 COPY --from=builder /app/.env* /app/
+COPY --from=builder /app/gh5-bucket-service-account.json /app/
 
 # Set the working directory
 WORKDIR /app
