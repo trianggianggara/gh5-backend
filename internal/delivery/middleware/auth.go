@@ -74,9 +74,9 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		authCtx := &baseModel.AuthContext{
-			ID:    id,
-			Name:  name,
-			Email: email,
+			ID:       id,
+			Name:     name,
+			Email:    email,
 			RoleCode: roleCode,
 		}
 		ctx := ctxval.SetAuthValue(c.Request().Context(), authCtx)

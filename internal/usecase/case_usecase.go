@@ -74,6 +74,14 @@ func (u *CaseUsecase) Find(ctx context.Context) ([]dto.CaseResponse, error) {
 
 		}
 
+		client, err := u.RepositoryFactory.UserRepository.FindByID(ctx, Case.ClientID)
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
+			return result, err
+		}
+
+		Case.Client = client
+
 		result = append(result, dto.CaseResponse{
 			Data: Case,
 		})
@@ -98,6 +106,14 @@ func (u *CaseUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 			return result, err
 		}
 		data.Contributor = userContributor
+
+		lawyer, err := u.RepositoryFactory.LawyerRepository.FindByID(ctx, data.Contributor.LawyerID)
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
+			return result, err
+		}
+
+		data.Contributor.Lawyer = lawyer
 	}
 
 	if data.UploaderID != nil {
@@ -108,7 +124,22 @@ func (u *CaseUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 		}
 		data.Uploader = userUploader
 
+		lawyer, err := u.RepositoryFactory.LawyerRepository.FindByID(ctx, data.Uploader.LawyerID)
+		if err != nil {
+			u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
+			return result, err
+		}
+
+		data.Uploader.Lawyer = lawyer
 	}
+
+	client, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.ClientID)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find lawyer by id : %+v", err)
+		return result, err
+	}
+
+	data.Client = client
 
 	result = dto.CaseResponse{
 		Data: *data,

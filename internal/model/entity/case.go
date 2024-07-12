@@ -20,9 +20,11 @@ type CaseEntity struct {
 	CaseDetail      string  `json:"case_detail"`
 	Status          string  `json:"status" validate:"required" gorm:"not null"`
 	IsActive        bool    `json:"is_active"`
+	ClientID        *string `json:"client_id"`
 	ContributorID   *string `json:"contributor_id"`
 	UploaderID      *string `json:"uploader_id"`
 
+	Client      *UserModel `json:"client" gorm:"foreignkey:ClientID"`
 	Contributor *UserModel `json:"contributor" gorm:"foreignkey:ContributorID"`
 	Uploader    *UserModel `json:"uploader" gorm:"foreignkey:UploaderID"`
 }
@@ -42,7 +44,6 @@ func (m *CaseModel) BeforeCreate(tx *gorm.DB) (err error) {
 	m.IsActive = true
 	m.CreatedAt = *date.DateTodayLocal()
 	m.CreatedBy = constant.DB_DEFAULT_CREATED_BY
-
 	return
 }
 
