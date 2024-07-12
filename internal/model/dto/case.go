@@ -15,8 +15,10 @@ type (
 type (
 	UpdateCaseRequest struct {
 		ID              string  `param:"id" validate:"required"`
+		CaseName        string  `json:"case_name"`
+		CaseType        string  `json:"case_type"`
 		CaseNumber      string  `json:"case_number"`
-		CaseDescription string  `json:"case_description" validate:"required"`
+		CaseDescription string  `json:"case_description"`
 		CaseDetail      string  `json:"case_detail"`
 		Status          string  `json:"status" validate:"required"`
 		IsActive        *bool   `json:"is_active"`

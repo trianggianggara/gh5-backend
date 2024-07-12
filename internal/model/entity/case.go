@@ -13,6 +13,8 @@ import (
 )
 
 type CaseEntity struct {
+	CaseName        string  `json:"case_name" gorm:"not null"`
+	CaseType        string  `json:"case_type"`
 	CaseNumber      string  `json:"case_number" gorm:"size:50"`
 	CaseDescription string  `json:"case_description" gorm:"not null"`
 	CaseDetail      string  `json:"case_detail"`

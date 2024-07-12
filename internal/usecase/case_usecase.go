@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"gh5-backend/internal/factory/repository"
 	"gh5-backend/internal/model/dto"
 	model "gh5-backend/internal/model/entity"
@@ -25,7 +26,27 @@ func (u *CaseUsecase) Find(ctx context.Context) ([]dto.CaseResponse, error) {
 		return result, err
 	}
 
+	lawyers, err := u.RepositoryFactory.UserRepository.FindLawyers(ctx)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find contributor by id : %+v", err)
+		return result, err
+	}
+
+	fmt.Println(lawyers)
+
+	lawyerMap := make(map[string]model.UserModel)
+	for _, lawyer := range lawyers {
+		lawyerMap[lawyer.ID] = lawyer
+	}
+
 	for _, Case := range Cases {
+		contributorID := *Case.ContributorID
+		uploaderID := *Case.UploaderID
+
+		uploader := lawyerMap[uploaderID]
+		contributor := lawyerMap[contributorID]
+		Case.Uploader = &uploader
+		Case.Contributor = &contributor
 		result = append(result, dto.CaseResponse{
 			Data: Case,
 		})
@@ -43,6 +64,21 @@ func (u *CaseUsecase) FindByID(ctx context.Context, payload dto.ByIDRequest) (dt
 		return result, err
 	}
 
+	userContributor, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.ContributorID)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find contributor by id : %+v", err)
+		return result, err
+	}
+
+	userUploader, err := u.RepositoryFactory.UserRepository.FindByID(ctx, data.UploaderID)
+	if err != nil {
+		u.RepositoryFactory.Log.Warnf("Failed find uploader by id : %+v", err)
+		return result, err
+	}
+
+	data.Contributor = userContributor
+	data.Uploader = userUploader
+
 	result = dto.CaseResponse{
 		Data: *data,
 	}
@@ -56,6 +92,8 @@ func (u *CaseUsecase) Create(ctx context.Context, payload dto.CreateCaseRequest)
 		data     model.CaseModel
 		caseData = model.CaseModel{
 			CaseEntity: model.CaseEntity{
+				CaseName:        payload.CaseName,
+				CaseType:        payload.CaseType,
 				CaseNumber:      payload.CaseNumber,
 				CaseDescription: payload.CaseDescription,
 				CaseDetail:      payload.CaseDetail,
@@ -85,6 +123,18 @@ func (u *CaseUsecase) UpdateByID(ctx context.Context, payload dto.UpdateCaseRequ
 		existingData, err := u.RepositoryFactory.CaseRepository.FindByID(ctx, payload.ID)
 		if err != nil {
 			return err
+		}
+
+		if payload.CaseName != "" {
+			existingData.CaseName = payload.CaseName
+		}
+
+		if payload.CaseType != "" {
+			existingData.CaseType = payload.CaseType
+		}
+
+		if payload.CaseNumber != "" {
+			existingData.CaseNumber = payload.CaseNumber
 		}
 
 		if payload.CaseNumber != "" {
