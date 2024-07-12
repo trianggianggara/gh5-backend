@@ -2,6 +2,7 @@ package entity
 
 import (
 	"context"
+	"time"
 
 	abstraction "gh5-backend/internal/model/base"
 	constant "gh5-backend/pkg/constants"
@@ -57,4 +58,27 @@ func (m *CaseModel) BeforeUpdate(tx *gorm.DB) (err error) {
 		m.ModifiedBy = &authCtx.Name
 	}
 	return
+}
+
+type CaseDetails struct {
+	CaseID          string    `json:"case_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	CaseNumber      string    `json:"case_number"`
+	CaseDescription string    `json:"case_description"`
+	CaseDetail      string    `json:"case_detail"`
+	Status          string    `json:"status"`
+	CaseName        string    `json:"case_name"`
+	CaseType        string    `json:"case_type"`
+	ClientID        string    `json:"client_id"`
+	ContributorID   string    `json:"contributor_id"`
+	UploaderID      string    `json:"uploader_id"`
+	UserID          string    `json:"user_id"`
+
+	Client      *UserModel `json:"client" gorm:"foreignkey:ClientID"`
+	Contributor *UserModel `json:"contributor" gorm:"foreignkey:ContributorID"`
+	Uploader    *UserModel `json:"uploader" gorm:"foreignkey:UploaderID"`
+}
+
+func (CaseDetails) TableName() string {
+	return "case_details"
 }

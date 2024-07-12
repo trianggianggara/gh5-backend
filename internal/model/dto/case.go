@@ -50,3 +50,15 @@ type (
 		} `json:"body"`
 	}
 )
+
+type (
+	CaseDetailsResponse struct {
+		Data model.CaseDetails
+	}
+	CaseDetailsResponseDoc struct {
+		Body struct {
+			Meta res.Meta     `json:"meta"`
+			Data CaseResponse `json:"data"`
+		} `json:"body"`
+	}
+)

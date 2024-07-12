@@ -36,3 +36,19 @@ func (r *Repository[T]) FindAll(ctx context.Context) ([]model.CaseModel, error) 
 	}
 	return *result, nil
 }
+
+func (r *Repository[T]) FindCaseByUserID(ctx context.Context, userID string) ([]model.CaseDetails, error) {
+	r.checkTrx(ctx)
+	query := r.getConn().Model(model.CaseDetails{})
+	result := new([]model.CaseDetails)
+	err := query.
+		Where("user_id = ?", userID).
+		Preload("Contributor.Lawyer").
+		Preload("Uploader.Lawyer").
+		Preload("Client").
+		Find(result).Error
+	if err != nil {
+		return nil, r.maskError(err)
+	}
+	return *result, nil
+}
